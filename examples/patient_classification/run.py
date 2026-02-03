@@ -13,6 +13,7 @@ from pathlib import Path
 
 from llm_etl.core.pipeline import Pipeline
 from llm_etl.llm.providers.mock import MockProvider
+from llm_etl.llm.providers.azure_openai import AzureOpenaiProvider
 from llm_etl.sinks.csv_sink import CSVSink
 from llm_etl.sources.csv_source import CSVSource
 from llm_etl.steps.classifier import ClassifierStep
@@ -61,7 +62,7 @@ def create_pipeline() -> Pipeline:
 
     # Configure mock provider with default responses
     # Since the mock provider may not reliably extract step names, we use default_response
-    mock_provider = MockProvider(
+    llm_provider = MockProvider(
         default_response={
             "category": "Emergency",
             "confidence": 0.92,
@@ -71,6 +72,8 @@ def create_pipeline() -> Pipeline:
             "rules_applied": ["Maximum 30 words", "Focus on chief complaint"],
         }
     )
+
+    # llm_provider = AzureOpenaiProvider()
 
     # Build the pipeline
     pipeline = Pipeline(
@@ -118,7 +121,7 @@ def create_pipeline() -> Pipeline:
         ),
 
         # Use mock provider for testing
-        llm_provider=mock_provider,
+        llm_provider=llm_provider,
 
         # Error handling: write failed rows to dead letter file
         on_row_error="dead_letter",
