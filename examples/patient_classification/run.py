@@ -53,13 +53,6 @@ def create_pipeline() -> Pipeline:
         },
     ]
 
-    # Define summarization rules
-    summary_rules = [
-        "Maximum 30 words",
-        "Focus on chief complaint and diagnosis",
-        "Preserve medication names",
-    ]
-
     # Configure LLM provider
     # Option 1: Use MockProvider for testing without API calls
     llm_provider = MockProvider(
@@ -67,9 +60,7 @@ def create_pipeline() -> Pipeline:
             "category": "Emergency",
             "confidence": 0.92,
             "reasoning": "Mock classification for testing",
-            "text": "Patient with acute condition requiring medical attention and evaluation.",
-            "word_count": 11,
-            "rules_applied": ["Maximum 30 words", "Focus on chief complaint"],
+            "text": "Patient with acute condition requiring immediate medical attention and evaluation.",
         }
     )
 
@@ -98,7 +89,6 @@ def create_pipeline() -> Pipeline:
             ),
             SummarizerStep(
                 name="note_summarizer",
-                rules=summary_rules,
                 input_map={
                     "text": lambda s: s.raw["clinical_notes"],
                     "focus": lambda s: s.processed["visit_type"]["category"],
@@ -117,7 +107,6 @@ def create_pipeline() -> Pipeline:
                 "confidence": lambda s: s.processed["visit_type"]["confidence"],
                 "reasoning": lambda s: s.processed["visit_type"]["reasoning"],
                 "clinical_summary": lambda s: s.processed["summary"]["text"],
-                "summary_word_count": lambda s: s.processed["summary"]["word_count"],
                 "processed_at": lambda s: s.completed_at.isoformat() if s.completed_at else "",
             },
         ),

@@ -87,7 +87,7 @@ ClassifierStep(
 SummarizerStep(
     input_map={
         "text": lambda s: s.raw["ClinicalNote"],
-        "focus": lambda s: s.processed["visit_type"]["category"]
+        "focus": lambda s: s.processed["visit_type"]["category"]  # Uses classifier output
     },
     output_key="summary"
 )
@@ -152,14 +152,6 @@ visit_taxonomy = [
     },
 ]
 
-# Define summarization rules
-summary_rules = [
-    "Maximum 50 words",
-    "Focus on chief complaint and diagnosis",
-    "Exclude administrative details",
-    "Preserve medication names",
-]
-
 # Build the pipeline
 pipeline = Pipeline(
     name="patient_visit_enrichment",
@@ -181,7 +173,6 @@ pipeline = Pipeline(
         ),
         SummarizerStep(
             name="note_summarizer",
-            rules=summary_rules,
             input_map={
                 "text": lambda s: s.raw["clinical_notes"],
                 "focus": lambda s: s.processed["visit_type"]["category"],
@@ -320,7 +311,7 @@ state.to_json()  # JSON string for logging
 | Step | Purpose | Required Input | Output Schema |
 |------|---------|----------------|---------------|
 | `ClassifierStep` | Classify text into predefined taxonomy | `text`, optional `context` | `{category, confidence, reasoning}` |
-| `SummarizerStep` | Reduce text following explicit rules | `text`, optional `focus` | `{text, word_count, rules_applied}` |
+| `SummarizerStep` | Summarize text with optional focus context | `text`, optional `focus` | `{text, reasoning}` |
 
 ### Sources
 
