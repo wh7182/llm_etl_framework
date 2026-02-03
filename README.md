@@ -1,4 +1,4 @@
-A modular Python framework for Cognitive ETL pipelines. Extract data from SQL Server, process unstructured text with Azure OpenAI, and sink structured results back to SQL Server—all with type-safe schemas and automatic retry logic.
+A modular Python framework for Cognitive ETL pipelines. Extract data from SQL Server, process unstructured text with Azure OpenAI, and sink structured results back to SQL Server—all with type-safe schemas and automatic retry logic. The project should use uv
 
 ---
 
