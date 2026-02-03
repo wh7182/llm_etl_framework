@@ -106,7 +106,7 @@ class AbstractBaseStep(ABC):
         return {key: func(state) for key, func in self.input_map.items()}
 
     @abstractmethod
-    def execute(self, mapped_input: dict[str, Any], llm_client: Any) -> BaseModel:
+    def execute(self, mapped_input: dict[str, Any], llm_client: Any, pk: str) -> BaseModel:
         """
         Execute the step's core logic using mapped inputs.
 
@@ -117,6 +117,7 @@ class AbstractBaseStep(ABC):
         Args:
             mapped_input: Dictionary of inputs resolved from input_map
             llm_client: LLM client instance for making API calls
+            pk: Primary key of the record being processed (for logging)
 
         Returns:
             Pydantic BaseModel containing the step's output
@@ -126,7 +127,7 @@ class AbstractBaseStep(ABC):
             LLMValidationError: If LLM output fails validation
 
         Example:
-            >>> def execute(self, mapped_input: dict, llm_client) -> MyOutputSchema:
+            >>> def execute(self, mapped_input: dict, llm_client, pk: str) -> MyOutputSchema:
             ...     text = mapped_input["text"]
             ...     response = llm_client.call(prompt=f"Analyze: {text}")
             ...     return MyOutputSchema.model_validate(response)
@@ -168,7 +169,7 @@ class AbstractBaseStep(ABC):
         mapped_input = self._apply_input_map(state)
 
         # 2. Execute the step's core logic
-        result = self.execute(mapped_input, llm_client)
+        result = self.execute(mapped_input, llm_client, pk=state.pk)
 
         # 3. Store result as dict in processed
         state.processed[self.output_key] = result.model_dump()
