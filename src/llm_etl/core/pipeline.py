@@ -395,11 +395,16 @@ class Pipeline:
             failed rows are never lost, even if the pipeline crashes.
         """
         # Extract retry count if this was an LLMValidationError
-        from ..core.exceptions import LLMValidationError
+        from ..core.exceptions import LLMValidationError, StepExecutionError
 
         retry_attempts = 0
-        if isinstance(error, LLMValidationError):
-            retry_attempts = error.retry_count
+        # Check if error is LLMValidationError (direct or wrapped in StepExecutionError)
+        actual_error = error
+        if isinstance(error, StepExecutionError):
+            actual_error = error.original_error
+
+        if isinstance(actual_error, LLMValidationError):
+            retry_attempts = actual_error.retry_count
 
         # Create dead letter record
         record = {
