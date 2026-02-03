@@ -60,8 +60,8 @@ def create_pipeline() -> Pipeline:
         "Preserve medication names",
     ]
 
-    # Configure mock provider with default responses
-    # Since the mock provider may not reliably extract step names, we use default_response
+    # Configure LLM provider
+    # Option 1: Use MockProvider for testing without API calls
     llm_provider = MockProvider(
         default_response={
             "category": "Emergency",
@@ -73,6 +73,8 @@ def create_pipeline() -> Pipeline:
         }
     )
 
+    # Option 2: Use AzureOpenAIProvider (requires .env file with credentials)
+    # Copy .env.example to .env and fill in your Azure OpenAI credentials
     # llm_provider = AzureOpenaiProvider()
 
     # Build the pipeline

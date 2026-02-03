@@ -37,8 +37,7 @@ class AzureOpenAIProvider(LLMClient):
         api_key: str | None = None,
         deployment: str | None = None,
         api_version: str | None = None,
-        timeout: float = 60.0,
-        max_tokens: int = 4096
+        timeout: float = 60.0
     ):
         """
         Initialize Azure OpenAI provider.
@@ -49,7 +48,6 @@ class AzureOpenAIProvider(LLMClient):
             deployment: Deployment name (reads from AZURE_OPENAI_DEPLOYMENT if None)
             api_version: API version (reads from AZURE_OPENAI_API_VERSION if None, defaults to "2024-02-15-preview")
             timeout: Request timeout in seconds
-            max_tokens: Maximum tokens in response
 
         Raises:
             ValueError: If required configuration is missing
@@ -61,7 +59,6 @@ class AzureOpenAIProvider(LLMClient):
         self.api_version = api_version or os.getenv("AZURE_OPENAI_API_VERSION", "2024-02-15-preview")
 
         self.timeout = timeout
-        self.max_tokens = max_tokens
 
         # Validate required parameters
         missing = []
@@ -125,7 +122,6 @@ class AzureOpenAIProvider(LLMClient):
                     model=self.deployment,
                     messages=messages,
                     response_model=response_model,
-                    max_tokens=self.max_tokens,
                     timeout=self.timeout
                 )
 
